@@ -2,6 +2,7 @@
 -- https://github.com/nvim-neo-tree/neo-tree.nvim
 
 return {
+
   'nvim-neo-tree/neo-tree.nvim',
   version = '*',
   dependencies = {
@@ -14,6 +15,10 @@ return {
     { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
   },
   opts = {
+    window = {
+      position = 'left',
+      width = 30,
+    },
     filesystem = {
       window = {
         mappings = {
