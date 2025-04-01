@@ -20,6 +20,11 @@ return {
       width = 30,
     },
     filesystem = {
+      filtered_items = {
+        visibile = true,
+        hide_dotfiles = false,
+        hide_gitignored = false,
+      },
       window = {
         mappings = {
           ['\\'] = 'close_window',

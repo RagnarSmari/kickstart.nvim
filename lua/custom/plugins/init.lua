@@ -15,4 +15,10 @@ return {
       }
     end,
   },
+
+  require 'custom.plugins.frameworks.react',
+  require 'custom.plugins.languages.javascript',
+  require 'custom.plugins.languages.typescript',
+  require 'custom.plugins.languages.html',
+  require 'custom.plugins.languages.css',
 }
