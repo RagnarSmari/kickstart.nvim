@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -599,18 +599,46 @@ require('lazy').setup({
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
+      ---
+
+      local vue_ls_path = vim.fn.expand '$MASON/packages/vue-language-server/node_modules/@vue/language-server'
+
       local servers = {
-        clangd = {},
+        -- clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        ts_ls = {},
-
+        vue_ls = {
+          before_init = function(params, config)
+            local root = config.root_dir or (params.rootUri and params.rootUri ~= vim.NIL and vim.uri_to_fname(params.rootUri))
+            if root then
+              local tsdk = vim.fs.joinpath(root, 'node_modules', 'typescript', 'lib')
+              if vim.uv.fs_stat(tsdk) then
+                params.initializationOptions = vim.tbl_deep_extend('force', params.initializationOptions or {}, { typescript = { tsdk = tsdk } })
+              end
+            end
+          end,
+        },
+        vtsls = {
+          settings = {
+            vtsls = {
+              tsserver = {
+                globalPlugins = {
+                  {
+                    name = '@vue/typescript-plugin',
+                    location = vue_ls_path,
+                    languages = { 'vue' },
+                    configNamespace = 'typescript',
+                  },
+                },
+              },
+            },
+          },
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+        },
         stylua = {}, -- Used to format Lua code
 
         -- Special Lua Config, as recommended by neovim help docs
@@ -691,7 +719,7 @@ require('lazy').setup({
           lua = true,
           python = true,
           javascript = true,
-          typescrpt = true
+          typescrpt = true,
         }
         if enabled_filetypes[vim.bo[bufnr].filetype] then
           return { timeout_ms = 500 }
@@ -709,7 +737,7 @@ require('lazy').setup({
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
