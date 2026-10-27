@@ -17,6 +17,10 @@ require('neo-tree').setup {
       mappings = {
         ['\\'] = 'close_window',
         ['<A-1>'] = 'close_window',
+        ['p'] = function(state)
+          local node = state.tree:get_node()
+          require('neo-tree.ui.renderer').focus_node(state, node:get_parent_id())
+        end,
       },
     },
   },

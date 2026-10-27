@@ -731,12 +731,25 @@ do
   -- Enable the following language servers
   --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
   --  See `:help lsp-config` for information about keys and how to configure
+  vim.pack.add {
+    gh 'neovim/nvim-lspconfig',
+    gh 'mason-org/mason.nvim',
+    gh 'mason-org/mason-lspconfig.nvim',
+    gh 'WhoIsSethDaniel/mason-tool-installer.nvim',
+  }
+
+  -- Automatically install LSPs and related tools to stdpath for Neovim
+  require('mason').setup {}
+
+  -- NOTE: `$MASON` is only set once `mason.nvim` has been set up above, so this
+  -- must come after `require('mason').setup {}` or the path expands to garbage
+  -- and tsserver silently fails to load `@vue/typescript-plugin`.
   local vue_ls_path = vim.fn.expand '$MASON/packages/vue-language-server/node_modules/@vue/language-server'
 
   ---@type table<string, vim.lsp.Config>
   local servers = {
     -- clangd = {},
-    -- gopls = {},
+    gopls = {},
     -- pyright = {},
     -- tsc = {},
     --
@@ -810,16 +823,6 @@ do
     },
   }
 
-  vim.pack.add {
-    gh 'neovim/nvim-lspconfig',
-    gh 'mason-org/mason.nvim',
-    gh 'mason-org/mason-lspconfig.nvim',
-    gh 'WhoIsSethDaniel/mason-tool-installer.nvim',
-  }
-
-  -- Automatically install LSPs and related tools to stdpath for Neovim
-  require('mason').setup {}
-
   -- Translates between nvim-lspconfig server names and mason.nvim package names (e.g. lua_ls <-> lua-language-server)
   require('mason-lspconfig').setup {
     automatic_enable = false, -- Change this to true if you want to automatically enable servers that are installed manually (e.g. via :Mason / :MasonInstall)
@@ -835,6 +838,7 @@ do
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
+    'markdownlint', -- used by nvim-lint (lua/kickstart/plugins/lint.lua)
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
